@@ -16,6 +16,7 @@ from scipy.interpolate import interp1d
 import csv
 from lmfit.models import PolynomialModel 
 from matplotlib.ticker import FormatStrFormatter 
+import pandas
 
 def test_table(Emeas,Gmeas,Earraysize, Garraysize,minE, maxE, minG, maxG):
     '''
@@ -83,9 +84,18 @@ def make_table(output,IOCtable):
     pv = epics.PV('XF:02ID-ID{EPU:1-RLT}Val:Table%sa-Wfrm'%(IOCtable))
     print(f'\nWriting to PV:\t{pv}\n{fp}\n\n')
     pv.put(fp)
-    
+
+def load_input_pd_csv(file):
+    '''file : csv file created by bandas to_csv with index = False
+
+    returns 
+         df : user sets X and Y how they like
+    '''        
 
 def load_input(file):
+    '''file : csv file with no headers, first column x (energy), second column y (gap)
+              expecting tab delimited
+    '''
     print('Input file is:\t', file,'\n\n')
     with open(file) as csvfile:
         readCSV = csv.reader(csvfile, delimiter='\t')
