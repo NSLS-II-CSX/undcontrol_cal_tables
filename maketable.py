@@ -75,13 +75,14 @@ def make_table(output,IOCtable):
      
     fp = np.concatenate((np.array([x[0], x[1] - x[0], y.size, -1, 1, 3]), y, y, y))
     ######pv = epics.PV('XF:02ID-ID{EPU:1-FLT}Val:Table1a-Wfrm')  ## example to test
-    pv = epics.PV('XF:02ID-ID{EPU:1-FLT}Val:Table%sa-Wfrm'%(IOCtable))
+    #pv = epics.PV('XF:02ID-ID{EPU:1-FLT}Val:Table%sa-Wfrm'%(IOCtable))
+    pv = epics.PV('XF:23ID-ID{EPU:2-FLT}Val:Table%sa-Wfrm'%(IOCtable))
     print(f'\nWriting to PV:\t{pv}\n{fp}\n\n')
     pv.put(fp)
         
     fp = np.concatenate((np.array([x2[0], x2[1] - x2[0], y2.size, -1, 1, 3]), y2, y2, y2))
     ######pv = epics.PV('XF:02ID-ID{EPU:1-RLT}Val:Table1a-Wfrm')  ## example to test
-    pv = epics.PV('XF:02ID-ID{EPU:1-RLT}Val:Table%sa-Wfrm'%(IOCtable))
+    pv = epics.PV('XF:23ID-ID{EPU:2-RLT}Val:Table%sa-Wfrm'%(IOCtable))
     print(f'\nWriting to PV:\t{pv}\n{fp}\n\n')
     pv.put(fp)
 
@@ -205,11 +206,12 @@ def fit_input_make_output(xe, yg, Epts = 1000, Emin = None, Emax = None, polydeg
 
     return output
 
-def set_EPUioc_table(file,  Epts=1000, ioc_table_num=None, write_to_ioc=False, Emin = None, Emax = None, third_fm_first = False, polydeg = 7 ):
+def set_EPUioc_table(file, csv_pandas=True, Epts=1000, ioc_table_num=None, write_to_ioc=False, Emin = None, Emax = None, third_fm_first = False, polydeg = 7 ):
     '''Function fits epu gap vs beamline energy to create a lookup table for automatically setting the epu gap for a given energy and polarization.
-    You can find the branch for this function at https://github.com/NSLS-II-CSX/undcontrol/tree/six
+    You can find the branch for this function at https://github.com/NSLS-II-CSX/undcontrol_cal_tables
     variable\t      :   \tdetails
     file\t          :   \t.csv file.  format used from Valentina.  See example format and crate file with same (entry number, energy, gap)
+    csv_pandas\t    :   \t if the csv file is sourced from df.to_csv(index=False) with x = energy, y = gap. Else it is Valentina's file (at SIX)
     Epts\t          :   \tnumber of points.  (Emax-Emin)/Epts = energy resolution of the table
     ioc_table_no\t  :   \tcreates PV assocaite with specific table in the beamline undcontrol IOC. See the undcontrolApp associated with the gitrepo.
     write_to_ioc\t  :   \tdefault False to test function and visualize results before writing to ioc. set to True to write to ioc PV.
@@ -218,7 +220,10 @@ def set_EPUioc_table(file,  Epts=1000, ioc_table_num=None, write_to_ioc=False, E
     third_fm_first\t:   \tSet to true to create the EPU 3rd harmonic lookup table given that the input is for the 1st harmonic    
     polydeg\t       :   \tparameter for the polynomial fit (degree).  7 is default and maximum number of degrees.
     '''
-    xe, yg = load_input(file)
+    if csv_pandas:
+        xe, yg = load_input_pd_csv(file)
+    else:
+        xe, yg = load_input(file)
     if third_fm_first is True:
         xe = np.array(xe)*3
     
