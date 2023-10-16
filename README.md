@@ -10,7 +10,7 @@ Python code for generating and uploading epu calbration tables to the `undcontro
 1. Start ipython session (`analysis`) 
 2. `%run -i maketable.py`
 3. Develop the fits to data and determine paramters fr `set_EPUioc_table()` 
-4. if you encounter an issue with "memory" you may need to set the maximum sized array allow for EPICS. I am not sure if ! export.... commnad will work in ipython session. you may need to exit the session to run export EPICS_CA_MAX_ARRAY_BYTES=100000000. 
+4. if you encounter an issue with "memory" you may need to set the maximum sized array allow for EPICS. I am not sure if `!export....` command will work in ipython session. you may need to exit the session to `run export EPICS_CA_MAX_ARRAY_BYTES=100000000`. 
 5. pyepics has not been imported as a fail safe. When ready, you will need to `import epics`
 
 
